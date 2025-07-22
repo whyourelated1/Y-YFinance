@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9C0DC7762E2F8F1100C15D75 /* .txt in Resources */ = {isa = PBXBuildFile; fileRef = 9C0DC7752E2F8F1100C15D75 /* .txt */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		9C30C4DA2E2F834700462100 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,6 +28,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9C0DC7752E2F8F1100C15D75 /* .txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = .txt; sourceTree = "<group>"; };
 		9C30C4C72E2F833D00462100 /* Y&YFinance.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Y&YFinance.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C30C4D92E2F834700462100 /* Y&YFinanceTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Y&YFinanceTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C30C4E32E2F834700462100 /* Y&YFinanceUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Y&YFinanceUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -79,6 +84,7 @@
 				9C30C4DC2E2F834700462100 /* Y&YFinanceTests */,
 				9C30C4E62E2F834700462100 /* Y&YFinanceUITests */,
 				9C30C4C82E2F833D00462100 /* Products */,
+				9C0DC7752E2F8F1100C15D75 /* .txt */,
 			);
 			sourceTree = "<group>";
 		};
@@ -212,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C0DC7762E2F8F1100C15D75 /* .txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,6 +403,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Y&YFinance/Preview Content\"";
+				DEVELOPMENT_TEAM = AW3667Z3QA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -424,6 +432,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Y&YFinance/Preview Content\"";
+				DEVELOPMENT_TEAM = AW3667Z3QA;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -450,6 +459,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AW3667Z3QA;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
@@ -468,6 +478,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AW3667Z3QA;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				MARKETING_VERSION = 1.0;
@@ -485,6 +496,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AW3667Z3QA;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "whyourelated.Y-YFinanceUITests";
@@ -501,6 +513,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AW3667Z3QA;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "whyourelated.Y-YFinanceUITests";

@@ -1,17 +1,29 @@
-//
-//  Y_YFinanceTests.swift
-//  Y&YFinanceTests
-//
-//  Created by whyourelated on 22/07/25.
-//
 
-import Testing
+
+import XCTest
 @testable import Y_YFinance
 
-struct Y_YFinanceTests {
+final class NetworkingLiveTests: XCTestCase {
 
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+    let api = NetworkClient()
+
+    func testAccountsEndpoint() async throws {
+        let list: [AccountDTO] = try await api.request(Endpoints.accounts)
+        XCTAssertFalse(list.isEmpty, "Список счетов пустой")
     }
 
+    func testCategoriesEndpoint() async throws {
+        let list: [CategoryDTO] = try await api.request(Endpoints.categories)
+        XCTAssertFalse(list.isEmpty)
+    }
+
+    func testTransactionsEndpoint() async throws {
+        let now = Date()
+        let week = Calendar.current.date(byAdding: .day, value: -7, to: now)!
+        let list: [TransactionDTO] = try await api.request(
+            Endpoints.transactions(from: week, to: now)
+        )
+        // просто проверим, что код не свалился
+        XCTAssertNotNil(list)
+    }
 }
