@@ -6,57 +6,51 @@ struct Endpoints {
     // MARK: Accounts
     static let accounts =
       AnyEndpoint<Empty, [AccountDTO]>(
-          path: "/accounts",
-          method: "GET",
-          expect: [AccountDTO].self,
-          requiresAuth: true
+        method: "GET", path: "accounts",
+        requiresAuth: true, expect: [AccountDTO].self
       )
 
     // MARK: Categories
     static let categories =
       AnyEndpoint<Empty, [CategoryDTO]>(
-          path: "/categories",
-          method: "GET",
-          expect: [CategoryDTO].self,
-          requiresAuth: true
+        method: "GET", path: "categories",
+        requiresAuth: true, expect: [CategoryDTO].self
       )
 
-    // MARK: Transactions
-    static func transactions(from: Date, to: Date) -> AnyEndpoint<Empty, [TransactionDTO]> {
+    // MARK: Transactions list
+    static func transactions(
+        accountId: Int,
+        startDate: Date,
+        endDate: Date
+    ) -> AnyEndpoint<Empty, [TransactionDTO]> {
         let iso = Formatters.isoDateOnly
-        let query = "?from=\(iso.string(from: from))&to=\(iso.string(from: to))"
+        let startDateEncoded = iso.string(from: startDate).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let endDateEncoded = iso.string(from: endDate).addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        
         return .init(
-            path: "/transactions\(query)",
-            method: "GET",
-            expect: [TransactionDTO].self,
-            requiresAuth: true
+            method: "GET", path: "transactions/account/\(accountId)/period?startDate=\(startDateEncoded)&endDate=\(endDateEncoded)",
+            requiresAuth: true, expect: [TransactionDTO].self
         )
     }
-    
+
     // MARK: - Transactions MUTATIONS
     static let createTransaction =
           AnyEndpoint<TransactionCreateDTO, TransactionDTO>(
-              path: "/transactions",
-              method: "POST",
-              expect: TransactionDTO.self,
-              requiresAuth: true
+            method: "POST", path: "transactions",
+            requiresAuth: true, expect: TransactionDTO.self
           )
 
     static func updateTransaction(id: Int) -> AnyEndpoint<TransactionUpdateDTO, TransactionDTO> {
             .init(
-                path: "/transactions/\(id)",
-                method: "PUT",
-                expect: TransactionDTO.self,
-                requiresAuth: true
+                method: "PUT", path: "transactions/\(id)",
+                requiresAuth: true, expect: TransactionDTO.self
             )
         }
 
     static func deleteTransaction(id: Int) -> AnyEndpoint<Empty, EmptyServerResponse> {
             .init(
-                path: "/transactions/\(id)",
-                method: "DELETE",
-                expect: EmptyServerResponse.self,
-                requiresAuth: true
+                method: "DELETE", path: "transactions/\(id)",
+                requiresAuth: true, expect: EmptyServerResponse.self
             )
     }
 }

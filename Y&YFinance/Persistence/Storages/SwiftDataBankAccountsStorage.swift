@@ -6,18 +6,19 @@ final class SwiftDataAccountsStorage: AccountsStore {
     private let ctx: ModelContext
     init(modelContext: ModelContext) { self.ctx = modelContext }
 
-    // MARK: - Save
+    // MARK: Save
     func save(_ dto: AccountDTO) async {
+        //пробуем найти существующую запись
         if let model = try? ctx.fetch(
             FetchDescriptor<AccountEntity>(predicate: #Predicate { $0.id == dto.id })
         ).first {
-            // обновляем существующий
+            //бновляем поля
             model.name     = dto.name
             model.balance  = Decimal(string: dto.balance) ?? model.balance
             model.currency = dto.currency
-        } else if let domain = dto.toDomain() {
-            // добавляем новый
-            ctx.insert(AccountEntity(from: domain))
+        } else {
+            //такой записи нет, создаём новую
+            ctx.insert(AccountEntity(from: dto.toDomain()))
         }
         try? ctx.save()
     }

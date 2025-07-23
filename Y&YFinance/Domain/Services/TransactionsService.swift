@@ -1,6 +1,6 @@
 import Foundation
 protocol ITransactionsService {
-    func list(from: Date, to: Date) async throws -> [TransactionDTO]
+    func list(accountId: Int, from: Date, to: Date) async throws -> [TransactionDTO]
     func create(_ dto: TransactionCreateDTO) async throws -> TransactionDTO
     func edit(id: Int, dto: TransactionUpdateDTO) async throws -> TransactionDTO
     func delete(id: Int) async throws
@@ -8,7 +8,7 @@ protocol ITransactionsService {
 
 final class TransactionsService: ITransactionsService {
 
-    private let api = NetworkClient()
+    public let api = NetworkClient()
     private let accounts: IBankAccountsService
 
     init(accounts: IBankAccountsService = BankAccountsService()) {
@@ -16,8 +16,18 @@ final class TransactionsService: ITransactionsService {
     }
 
     // GET
-    func list(from: Date, to: Date) async throws -> [TransactionDTO] {
-        try await api.request(Endpoints.transactions(from: from, to: to))
+    func list(
+            accountId: Int,
+            from start: Date,
+            to end: Date
+    ) async throws -> [TransactionDTO] {
+        try await api.request(
+            Endpoints.transactions(
+                accountId: accountId,
+                startDate: start,
+                endDate: end
+            )
+        )
     }
 
     // POST

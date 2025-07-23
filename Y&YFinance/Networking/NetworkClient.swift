@@ -1,7 +1,7 @@
 import Foundation
 final class NetworkClient {
     private let session = URLSession(configuration: .default)
-    private let baseURL = URL(string: "https://shmr-finance.ru")!
+    private let baseURL = URL(string: "https://shmr-finance.ru/api/v1")!
     enum Auth {
         static let bearer: String = "wGxyUVjMpXLknl2Av3eqhjxI"
     }
@@ -9,11 +9,13 @@ final class NetworkClient {
         _ endpoint: AnyEndpoint<Req, Res>,
         body: Req? = nil
     ) async throws -> Res {
-
-        //URL
-        guard let url = URL(string: endpoint.path, relativeTo: baseURL) else {
+        // ——— Собираем полный URL без эскейпинга '?'
+        let base       = baseURL.absoluteString                          // ".../api/v1"
+        let fullString = base + "/" + endpoint.path                      // ".../api/v1/transactions/…?startDate=…"
+        guard let url   = URL(string: fullString) else {
             throw NetworkError.invalidURL
         }
+
         var request = URLRequest(url: url)
         request.httpMethod = endpoint.method
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -21,31 +23,35 @@ final class NetworkClient {
             request.setValue("Bearer \(Auth.bearer)", forHTTPHeaderField: "Authorization")
         }
 
-        //Encode body
+        // ——— Логируем
+        print("[REQ] \(request.httpMethod!) \(url.absoluteString)")
+
+        // ——— Кодируем тело, если есть
         if let body = body {
             do {
                 request.httpBody = try JSONEncoder().encode(body)
-            } catch { throw NetworkError.encodingFailed(error) }
+            } catch {
+                throw NetworkError.encodingFailed(error)
+            }
         }
 
-        //Perform
+        // ——— Выполняем один запрос
+        let (data, response) = try await session.data(for: request)
+        guard let http = response as? HTTPURLResponse else {
+            throw NetworkError.network(URLError(.badServerResponse))
+        }
+        let rawBody = String(data: data, encoding: .utf8) ?? ""
+        print("[RES] \(http.statusCode): \(rawBody)")
+
+        guard 200..<300 ~= http.statusCode else {
+            throw NetworkError.server(status: http.statusCode, message: rawBody)
+        }
+
+        // ——— Декодируем
         do {
-            let (data, response) = try await session.data(for: request)
-            guard let http = response as? HTTPURLResponse else {
-                throw NetworkError.network(URLError(.badServerResponse))
-            }
-            guard 200..<300 ~= http.statusCode else {
-                let msg = String(data: data, encoding: .utf8)
-                throw NetworkError.server(status: http.statusCode, message: msg)
-            }
-
-            //Decode
-            do {
-                return try JSONDecoder().decode(Res.self, from: data)
-            } catch { throw NetworkError.decodingFailed(error) }
-
-        } catch let urlErr as URLError {
-            throw NetworkError.network(urlErr)
+            return try JSONDecoder().decode(Res.self, from: data)
+        } catch {
+            throw NetworkError.decodingFailed(error)
         }
     }
 }

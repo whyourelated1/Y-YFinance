@@ -26,7 +26,7 @@ struct TransactionRowView: View {
             HStack(spacing: 12) {
                 if transaction.category.direction == .outcome {
                     ZStack {
-                        Circle().fill(Color.circle)
+                        Circle().fill(Color.accentColor)
                         Text(transaction.category.emoji.description)
                             .font(.system(size: 12))
                     }
@@ -58,12 +58,12 @@ struct TransactionRowView: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .fullScreenCover(isPresented: $isEditPresented) {
+        /*.fullScreenCover(isPresented: $isEditPresented) {
             TransactionFormView(
                 viewModel: TransactionFormViewModel(mode: .edit(transaction: transaction)),
                 onDismiss: { isEditPresented = false },
                 onTransactionChanged: onTransactionChanged
             )
-        }
+        }*/
     }
 }

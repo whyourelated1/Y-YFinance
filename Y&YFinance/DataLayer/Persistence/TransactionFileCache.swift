@@ -1,4 +1,5 @@
 import Foundation
+
 final class TransactionsFileCache {
 
     private var dtos: [TransactionDTO] = []
@@ -16,13 +17,16 @@ final class TransactionsFileCache {
     }
 
     // MARK: Работа с Domain‑уровнем
-    /// Вернёт уже «склеенные» транзакции
     func domainTransactions(categories: [Category], account: BankAccount) -> [Transaction] {
-        let catById = Dictionary(uniqueKeysWithValues: categories.map{ ($0.id, $0) })
+        let catById = Dictionary(uniqueKeysWithValues: categories.map { ($0.id, $0) })
 
         return dtos.compactMap { dto in
-            guard let cat = catById[dto.categoryId] else { return nil }
-            return dto.toDomain(category: cat, account: account)
+            guard dto.account.id == account.id,
+                  let cat = catById[dto.category.id] else {
+                return nil
+            }
+            // преобразуем DTO→Domain, теперь метод без параметров:
+            return dto.toDomain()
         }
     }
 

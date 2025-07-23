@@ -71,3 +71,19 @@ enum Formatters {
         return enc
     }()
 }
+
+extension Date {
+
+    //Начало текущего дня (00:00 локального календаря)
+    var dayStart: Date {
+        Calendar.current.startOfDay(for: self)
+    }
+    //Конец текущего дня (23:59:59.999)
+    var dayEnd: Date {
+        // начало следующего дня ‑ 1 секунда
+        Calendar.current.date(byAdding: .second, value: -1,
+                              to: Calendar.current.date(byAdding: .day,
+                                                        value: 1,
+                                                        to: dayStart)!)!
+    }
+}

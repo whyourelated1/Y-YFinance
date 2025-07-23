@@ -21,7 +21,7 @@ final class NetworkingLiveTests: XCTestCase {
         let now = Date()
         let week = Calendar.current.date(byAdding: .day, value: -7, to: now)!
         let list: [TransactionDTO] = try await api.request(
-            Endpoints.transactions(from: week, to: now)
+            Endpoints.transactions(accountId: 1, startDate: week, endDate: now)
         )
         // просто проверим, что код не свалился
         XCTAssertNotNil(list)

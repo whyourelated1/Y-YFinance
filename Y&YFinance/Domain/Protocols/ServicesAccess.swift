@@ -38,6 +38,8 @@ extension UsesCategoryService {
 
 // MARK: - Transaction (ITransactionsService → UsesTransactionService)
 
+// MARK: - Transaction (ITransactionsService → UsesTransactionService)
+
 protocol UsesTransactionService {
     var txService: ITransactionsService { get }
 
@@ -59,29 +61,52 @@ protocol UsesTransactionService {
 extension UsesTransactionService
 where Self: UsesCategoryService & UsesAccountService {
 
-    func fetch(accountId: Int,
-               from: Date,
-               to:   Date) async throws -> [Transaction] {
+    func fetch(
+        accountId: Int,
+        from: Date,
+        to: Date
+    ) async throws -> [Transaction] {
+        // параллельно грузим DTO категорий и аккаунт
+        async let rawCats  = categoryService.all()
+        async let acctDTO  = currentAccount()
 
-        //загружаем категории и аккаунт параллельно
-        async let categoriesList = categoryService.all()
-        async let account        = currentAccount()
+        // получаем массив DTO транзакций
+        let dtoList = try await txService.list(accountId: accountId, from: from, to: to)
+        
+        // строим словарь id → Domain.Category
+        let cats = try await rawCats
+        let catDict = Dictionary(uniqueKeysWithValues: cats.map { ($0.id, $0.toDomain()) })
 
-        let dtoList = try await txService.list(from: from, to: to)
+        let acct = try await acctDTO
 
-        //словарь [id: Category]
-        let catDict = Dictionary(
-            uniqueKeysWithValues: try await categoriesList.map { ($0.id, $0) }
-        )
-        let acc = try await account
-
-        // DTO → Domain
+        // превращаем DTO → Domain.Transaction
         return dtoList.compactMap { dto in
-            guard let cat = catDict[dto.categoryId] else { return nil }
-            return dto.toDomain(category: cat, account: acc)
+            // dto.category.id вместо dto.categoryId
+            guard let categoryDomain = catDict[dto.category.id] else {
+                return nil
+            }
+            // dto.toDomain() умеет читать вложенные account и category
+            var tx = dto.toDomain()
+            // но убедимся, что он взял правильные вложенные
+            // (обычно dto.toDomain() уже создаёт Transaction(category: dto.category.toDomain(), account: dto.account.toDomain()))
+            return tx
         }
-        .filter { $0.account.id == accountId }
+    }
+
+    @discardableResult
+    func create(_ tx: Transaction) async throws -> Transaction {
+        let dto = try await txService.create(tx.toCreateDTO())
+        // тут dto уже содержит вложенные account и category
+        return dto.toDomain()
+    }
+
+    @discardableResult
+    func update(_ tx: Transaction) async throws -> Transaction {
+        let dto = try await txService.edit(id: tx.id, dto: tx.toUpdateDTO())
+        return dto.toDomain()
+    }
+
+    func delete(id: Int) async throws {
+        try await txService.delete(id: id)
     }
 }
-
-

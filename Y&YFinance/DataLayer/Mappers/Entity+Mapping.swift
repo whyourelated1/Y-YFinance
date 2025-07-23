@@ -36,47 +36,47 @@ extension CategoryEntity {
     }
 }
 
-// MARK: TransactionEntity ↔︎ TransactionDTO
+// MARK: - TransactionEntity ↔︎ TransactionDTO
 extension TransactionEntity {
-
+    
     // Entity ← DTO (от сервера)
     convenience init(from dto: TransactionDTO) {
-        self.init(id: dto.id,
-                  accountId: dto.accountId,
-                  categoryId: dto.categoryId,
-                  amount: Decimal(string: dto.amount) ?? 0,
-                  date: Formatters.parseISO(dto.transactionDate) ?? Date(),
-                  comment: dto.comment)
+        self.init(
+            id:         dto.id,
+            accountId:  dto.account.id,
+            categoryId: dto.category.id,
+            amount:     Decimal(string: dto.amount) ?? .zero,
+            date:       Formatters.parseISO(dto.transactionDate) ?? Date(),
+            comment:    dto.comment
+        )
     }
 
+    // Entity → DTO (для сохранения/бэкапа)
     func toDTO() -> TransactionDTO {
-        TransactionDTO(id: id,
-                       accountId: accountId,
-                       categoryId: categoryId,
-                       amount: "\(amount)",
-                       transactionDate: Formatters.isoMillis.string(from: date),
-                       comment: comment,
-                       createdAt: "",
-                       updatedAt: "")
-    }
-
-    // Entity ← Domain (локально созданная транзакция)
-    convenience init(from domain: Transaction) {
-        self.init(id: domain.id,
-                  accountId: domain.account.id,
-                  categoryId: domain.category.id,
-                  amount: domain.amount,
-                  date: domain.date,
-                  comment: domain.comment)
-    }
-
-    // Entity → Domain (для UI)
-    func toDomain(category: Category, account: BankAccount) -> Transaction {
-        Transaction(id: id,
-                    amount: amount,
-                    date: date,
-                    comment: comment,
-                    category: category,
-                    account: account)
+        // собираем вложенные DTO по собственным полям
+        let accountDTO = AccountDTO(
+            id:        accountId,
+            userId:    0,                 // если не важно, иначе подставьте своё
+            name:      "",                // у вас здесь нет имени, можно оставить пустым
+            balance:   "0",               // или строка balance, если есть
+            currency:  "",                // или currency, если Entity хранит
+            createdAt: "", updatedAt: ""
+        )
+        let categoryDTO = CategoryDTO(
+            id:       categoryId,
+            name:     "",                 // аналогично, подставьте своё поле, если есть
+            emoji:    "",                 // или String(emoji)
+            isIncome: false               // или Direction(rawValue: directionRaw) == .income
+        )
+        
+        return TransactionDTO(
+            id:              id,
+            account:         accountDTO,
+            category:        categoryDTO,
+            amount:          "\(amount)",
+            transactionDate: Formatters.isoMillis.string(from: date),
+            comment:         comment,
+            createdAt:       "", updatedAt: ""
+        )
     }
 }

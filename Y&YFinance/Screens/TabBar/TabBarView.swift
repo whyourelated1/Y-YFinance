@@ -18,7 +18,6 @@ struct TabBarView: View {
                     .tag(tab)
             }
         }
-        // Accent‑цвет ‑ зелёный, как в Asset “AccentColor”
         .tint(Color.accentColor)
         // фон таббара
         .toolbarBackground(colorScheme == .dark ? .black : .white, for: .tabBar)
@@ -26,36 +25,29 @@ struct TabBarView: View {
     }
 }
 
-// MARK: - содержимое вкладок
+// MARK: – содержимое вкладок
 private extension Tab {
+
     @ViewBuilder
     var content: some View {
         switch self {
+
         case .outcomes:
-            TransactionsListView(
-                viewModel: TransactionsListViewModel(direction: .outcome)
-            )
+            TxListView(direction: .outcome)     // список расходов
 
         case .incomes:
-            TransactionsListView(
-                viewModel: TransactionsListViewModel(direction: .income)
-            )
+            TxListView(direction: .income)      // список доходов
 
         case .account:
-            BankAccountView(
-                viewModel: BankAccountViewModel()
-            )
-
+            Text("В разработке")
         case .categories:
-            CategoriesView(
-                viewModel: CategoriesViewModel()
-            )
-
+            Text("В разработке")
         case .settings:
-            Text(label)   // здесь позже подключите настоящий Settings‑экран
+            Text("В разработке")
         }
     }
 }
+
 
 #if DEBUG
 #Preview {
